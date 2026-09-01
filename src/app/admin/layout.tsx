@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
@@ -7,11 +8,22 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Panel" };
 
+// El panel nunca debe servirse desde caché ni estáticamente.
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
+
+  // Segunda capa (defensa en profundidad): aunque el middleware ya filtró,
+  // se revalida el JWT contra Supabase con getUser() —nunca getSession()—
+  // antes de renderizar cualquier parte de la interfaz de administración.
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/login?redirectedFrom=/admin");
+  }
 
   return (
     <div className="flex min-h-dvh flex-col">

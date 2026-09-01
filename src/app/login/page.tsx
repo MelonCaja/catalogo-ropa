@@ -10,10 +10,12 @@ export const metadata: Metadata = { title: "Iniciar sesión" };
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ redirectTo?: string }>;
+  searchParams: Promise<{ redirectedFrom?: string }>;
 }) {
-  const { redirectTo } = await searchParams;
-  const target = redirectTo?.startsWith("/admin") ? redirectTo : "/admin";
+  const { redirectedFrom } = await searchParams;
+  // Solo se permite volver a rutas internas de /admin (evita open redirect).
+  const target =
+    redirectedFrom && /^\/admin(?:\/|$)/.test(redirectedFrom) ? redirectedFrom : "/admin";
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
