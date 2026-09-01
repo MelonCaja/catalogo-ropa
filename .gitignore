@@ -1,0 +1,16 @@
+# dependencias
+node_modules/
+
+# build
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# variables de entorno / credenciales
+.env
+.env.local
+.env*.local
+
+# sistema
+.DS_Store
